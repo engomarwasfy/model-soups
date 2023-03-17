@@ -25,9 +25,7 @@ class ModelWrapper(torch.nn.Module):
         if self.normalize:
             features = features / features.norm(dim=-1, keepdim=True)
         logits = self.classification_head(features)
-        if return_features:
-            return logits, features
-        return logits
+        return (logits, features) if return_features else logits
 
 def get_model_from_sd(state_dict, base_model):
     feature_dim = state_dict['classification_head.weight'].shape[1]
@@ -37,7 +35,7 @@ def get_model_from_sd(state_dict, base_model):
         p.data = p.data.float()
     model.load_state_dict(state_dict)
     model = model.cuda()
-    devices = [x for x in range(torch.cuda.device_count())]
+    devices = list(range(torch.cuda.device_count()))
     return torch.nn.DataParallel(model,  device_ids=devices)
 
 def maybe_dictionarize_batch(batch):
@@ -103,8 +101,7 @@ def test_model_on_dataset(model, dataset):
                     f"Acc: {100 * (correct/n):.2f}\tData (t) {data_time:.3f}\tBatch (t) {batch_time:.3f}"
                 )
 
-        top1 = correct / n
-        return top1
+        return correct / n
 
 
 def assign_learning_rate(param_group, new_lr):

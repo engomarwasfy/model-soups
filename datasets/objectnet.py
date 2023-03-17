@@ -95,7 +95,7 @@ class ObjectNetBase(ImageNet):
          self.class_sublist_mask,
          self.folders_to_ids,
          self.classname_map) = get_metadata(self.is_beta())
-        
+
         super().__init__(*args, **kwargs)
 
         self.classnames = sorted(list(self.folders_to_ids.keys()))
@@ -106,10 +106,7 @@ class ObjectNetBase(ImageNet):
             for imagenet_idx in self.rev_class_idx_map[idx]:
                 self.class_idx_map[imagenet_idx] = idx
 
-        if self.is_beta():
-            self.crop = crop_beta
-        else:
-            self.crop = crop
+        self.crop = crop_beta if self.is_beta() else crop
         self.preprocess = Compose([crop, self.preprocess])
         self.classnames = [self.classname_map[c].lower() for c in self.classnames]
 
@@ -126,7 +123,7 @@ class ObjectNetBase(ImageNet):
         return ObjectNetDataset(label_map, valdir, transform=self.preprocess)
 
     def project_logits(self, logits, device):
-        if isinstance(logits, list) or isinstance(logits, tuple):
+        if isinstance(logits, (list, tuple)):
             return [self.project_logits(l, device) for l in logits]
         if logits.shape[1] == 113:
             return logits
@@ -163,9 +160,8 @@ class ObjectNetBetaValClassesBase(ObjectNetBase):
     def get_test_sampler(self):
         idx_subsample_list = [range(x * 50, (x + 1) * 50) for x in self._class_sublist]
         idx_subsample_list = sorted([item for sublist in idx_subsample_list for item in sublist])
-        
-        sampler = SubsetSampler(idx_subsample_list)
-        return sampler
+
+        return SubsetSampler(idx_subsample_list)
 
     def get_test_dataset(self):
         return ImageFolderWithPaths(self.get_test_path(), transform=self.preprocess)

@@ -130,8 +130,8 @@ def get_imagenet_acc(test_dset):
             percent_complete = 100.0 * i / len(test_dset.test_loader)
             if ( i % 10 ) == 0:
                 print(
-                    f"Train Epoch: {0} [{percent_complete:.0f}% {i}/{len(test_dset.test_loader)}]\t"
-                    f"Loss: {loss.item():.6f}\tData (t) {data_time:.3f}\tBatch (t) {batch_time:.3f}", flush=True
+                    f"Train Epoch: 0 [{percent_complete:.0f}% {i}/{len(test_dset.test_loader)}]\tLoss: {loss.item():.6f}\tData (t) {data_time:.3f}\tBatch (t) {batch_time:.3f}",
+                    flush=True,
                 )
             end = time.time()
         acc = correct / float(n)
@@ -170,7 +170,10 @@ if __name__ == '__main__':
     _, names = make_functional(model)
     first = False
 
-    paramslist = [tuple(v.detach().requires_grad_().cpu() for _, v in sd.items()) for i, sd in enumerate(sds)]
+    paramslist = [
+        tuple(v.detach().requires_grad_().cpu() for _, v in sd.items())
+        for sd in sds
+    ]
     torch.cuda.empty_cache()
     alpha_model = AlphaWrapper(paramslist, model, names)
 
@@ -199,7 +202,7 @@ if __name__ == '__main__':
             out = alpha_model(inputs)
 
             loss = criterion(out, labels)
-            
+
             loss.backward()
             optimizer.step()
 

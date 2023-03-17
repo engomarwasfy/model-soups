@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
         model = get_model_from_sd(uniform_soup, base_model)
 
-        results = {'model_name' : f'uniform_soup'}
+        results = {'model_name': 'uniform_soup'}
         for dataset_cls in [ImageNet2p, ImageNet, ImageNetV2, ImageNetSketch, ImageNetR, ObjectNet, ImageNetA]:
 
             print(f'Evaluating on {dataset_cls.__name__}.')
@@ -133,7 +133,7 @@ if __name__ == '__main__':
             accuracy = test_model_on_dataset(model, dataset)
             results[dataset_cls.__name__] = accuracy
             print(accuracy)
-       
+
         with open(UNIFORM_SOUP_RESULTS_FILE, 'a+') as f:
             f.write(json.dumps(results) + '\n')
 
@@ -146,13 +146,14 @@ if __name__ == '__main__':
         # Sort models by decreasing accuracy on the held-out validation set ImageNet2p
         # (We call the held out-val set ImageNet2p because it is 2 percent of ImageNet train)
         individual_model_db = pd.read_json(INDIVIDUAL_MODEL_RESULTS_FILE, lines=True)
-        individual_model_val_accs = {}
-        for _, row in individual_model_db.iterrows():
-            individual_model_val_accs[row['model_name']] = row['ImageNet2p']
+        individual_model_val_accs = {
+            row['model_name']: row['ImageNet2p']
+            for _, row in individual_model_db.iterrows()
+        }
         individual_model_val_accs = sorted(individual_model_val_accs.items(), key=operator.itemgetter(1))
         individual_model_val_accs.reverse()
         sorted_models = [x[0] for x in individual_model_val_accs]
-        
+
         # Start the soup by using the first ingredient.
         greedy_soup_ingredients = [sorted_models[0]]
         greedy_soup_params = torch.load(os.path.join(args.model_location, f'{sorted_models[0]}.pt'))
@@ -186,7 +187,7 @@ if __name__ == '__main__':
 
         # Finally, evaluate the greedy soup.
         model = get_model_from_sd(greedy_soup_params, base_model)
-        results = {'model_name' : f'greedy_soup'}
+        results = {'model_name': 'greedy_soup'}
         for dataset_cls in [ImageNet2p, ImageNet, ImageNetV2, ImageNetSketch, ImageNetR, ObjectNet, ImageNetA]:
             print(f'Evaluating on {dataset_cls.__name__}.')
             dataset = dataset_cls(preprocess, args.data_location, args.batch_size, args.workers)
