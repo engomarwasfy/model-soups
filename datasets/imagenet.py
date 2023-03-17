@@ -111,9 +111,8 @@ class ImageNetSubsampleValClasses(ImageNet):
         self.class_sublist, self.class_sublist_mask = self.get_class_sublist_and_mask()
         idx_subsample_list = [range(x * 50, (x + 1) * 50) for x in self.class_sublist]
         idx_subsample_list = sorted([item for sublist in idx_subsample_list for item in sublist])
-        
-        sampler = SubsetSampler(idx_subsample_list)
-        return sampler
+
+        return SubsetSampler(idx_subsample_list)
 
     def project_labels(self, labels, device):
         projected_labels = [self.class_sublist.index(int(label)) for label in labels]
@@ -145,9 +144,7 @@ class ImageNet98p(ImageNet):
         #         np.save(f, idxs)
 
         idxs = (1 - idxs).astype('int')
-        sampler = SubsetRandomSampler(np.where(idxs)[0])
-
-        return sampler
+        return SubsetRandomSampler(np.where(idxs)[0])
 
 
 class ImageNet2p(ImageNet):
@@ -159,8 +156,7 @@ class ImageNet2p(ImageNet):
             idxs = np.load(f)
 
         idxs = idxs.astype('int')
-        sampler = SubsetSampler(np.where(idxs)[0])
-        return sampler
+        return SubsetSampler(np.where(idxs)[0])
 
 class ImageNet2pShuffled(ImageNet):
 
@@ -172,5 +168,4 @@ class ImageNet2pShuffled(ImageNet):
             idxs = np.load(f)
 
         idxs = idxs.astype('int')
-        sampler = SubsetRandomSampler(np.where(idxs)[0])
-        return sampler
+        return SubsetRandomSampler(np.where(idxs)[0])

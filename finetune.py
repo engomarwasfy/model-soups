@@ -106,7 +106,7 @@ if __name__ == '__main__':
         p.data = p.data.float()
 
     model = model.cuda()
-    devices = [x for x in range(torch.cuda.device_count())]
+    devices = list(range(torch.cuda.device_count()))
     model = torch.nn.DataParallel(model,  device_ids=devices)
 
     model_parameters = [p for p in model.parameters() if p.requires_grad]

@@ -49,14 +49,14 @@ if __name__ == '__main__':
 
         # download the ViT-L/14 0-shot model
         wget.download(
-            f'https://github.com/mlfoundations/model-soups/releases/download/v0.0.3/zero-shot-vit-l14.pt',
-            out=args.model_location
+            'https://github.com/mlfoundations/model-soups/releases/download/v0.0.3/zero-shot-vit-l14.pt',
+            out=args.model_location,
         )
 
         # download the ViT-L/14 fine-tuned model model
         wget.download(
-            f'https://github.com/mlfoundations/model-soups/releases/download/v0.0.3/checkpoint-4-vit-l14.pt',
-            out=args.model_location
+            'https://github.com/mlfoundations/model-soups/releases/download/v0.0.3/checkpoint-4-vit-l14.pt',
+            out=args.model_location,
         )
 
     base_model, preprocess = clip.load('ViT-L/14', 'cpu', jit=False)
