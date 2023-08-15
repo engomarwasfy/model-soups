@@ -7,7 +7,6 @@
 %%%%%%%%% PAPER TYPE  - PLEASE UPDATE FOR FINAL VERSION
 %\usepackage[review]{cvpr}      % To produce the REVIEW version
 \usepackage{cvpr}              % To produce the CAMERA-READY version
-%\usepackage{ijcai19}
 %$\usepackage[pagenumbers]{cvpr} % To force page numbers, e.g. for an arXiv version
 
 % Include other packages here, before hyperref.
@@ -20,13 +19,7 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{adjustbox}
-\usepackage{algpseudocode} % For algorithmic notation
-\usepackage{float}
 
-% Adjust table placement
-\floatplacement{table}{section}
-% Adjust algorithm placement
-\floatplacement{algorithm}{section}
 
 % It is strongly recommended to use hyperref, especially for the review version.
 % hyperref with option pagebackref eases the reviewers' job.
@@ -74,7 +67,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-	In this paper, we present a pioneering approach for model soups, termed "Iterative Scan Greedy Model Soup," and apply it to the domain of LiDAR semantic segmentation. Leveraging this innovative technique, we augment the state-of-the-art open source code for 2DPASS semantic segmentation and demonstrate its efficacy on both the semanticKitti dataset and the nuscenes dataset. Remarkably, our approach achieves substantial improvements in Mean Intersection Over Union (MIoU) without any increase in prediction time, all while retaining the original model structure.	Our contributions in this work are twofold: Firstly, we successfully extend the application of model soups to LiDAR semantic segmentation, showcasing their adaptability and potential impact on the domain. Secondly, we introduce an optimized and highly efficient version of the existing greedy soup technique, further enhancing the overall performance of the approach. Through comprehensive experiments and rigorous evaluations, our results highlight the significance of the iterative scan greedy model soup in advancing LiDAR semantic segmentation, opening up new possibilities for enhanced perception systems in autonomous driving and related fields.
+	In this paper, we present a pioneering approach for model soups, termed "Iterative Scan Greedy Model Soup," and apply it to the domain of LiDAR semantic segmentation. Leveraging this innovative technique, we augment the state-of-the-art open source code for 2DPASS \cite{yan20222dpass} semantic segmentation and demonstrate its efficacy on both the semanticKitti dataset and the nuscenes dataset. Remarkably, our approach achieves substantial improvements in Mean Intersection Over Union (MIoU) without any increase in prediction time, all while retaining the original model structure.	Our contributions in this work are twofold: Firstly, we successfully extend the application of model soups to LiDAR semantic segmentation, showcasing their adaptability and potential impact on the domain. Secondly, we introduce an optimized and highly efficient version of the existing greedy soup technique, further enhancing the overall performance of the approach. Through comprehensive experiments and rigorous evaluations, our results highlight the significance of the iterative scan greedy model soup in advancing LiDAR semantic segmentation, opening up new possibilities for enhanced perception systems in autonomous driving and related fields.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -87,15 +80,15 @@ Single Modality LiDAR-Based Input: These methods rely solely on LiDAR data as in
 
 Multiple Modality LiDAR-Based and Camera-Based Input: On the contrary, multiple-modality methods leverage both LiDAR-based and camera-based inputs. By fusing information from both modalities, these techniques attempt to exploit the strengths of each sensor to achieve more robust semantic segmentation.
 
-The open-source model "2D Priors Assisted Semantic Segmentation" (2DPASS) utilizes multiple modalities during the training process to enhance the prediction capabilities of a single-modality model. However, after training, only the single modality (LiDAR) is retained, making it a more practical solution in real-world deployment.
+The open-source model "2D Priors Assisted Semantic Segmentation" (2DPASS)\cite{yan20222dpass} utilizes multiple modalities during the training process to enhance the prediction capabilities of a single-modality model. However, after training, only the single modality (LiDAR) is retained, making it a more practical solution in real-world deployment.
 
 On the other hand, model soups present an efficient approach to improving model performance without modifying the underlying model structure. This technique involves creating an ensemble of models with uniform structures and achieving performance gains akin to traditional ensembling methods without incurring additional prediction costs.
 
-Building upon the foundation of 2DPASS, we propose a novel enhancement to the approach. We introduce a procedure where multiple checkpoints are saved during the training process, and subsequently, a new round of optimization is performed using model soups techniques. By iteratively applying model soups, we aim to further enhance the predictive capabilities of the LiDAR-based single-modality model.
+Building upon the foundation of 2DPASS \cite{yan20222dpass}, we propose a novel enhancement to the approach. We introduce a procedure where multiple checkpoints are saved during the training process, and subsequently, a new round of optimization is performed using model soups techniques. By iteratively applying model soups, we aim to further enhance the predictive capabilities of the LiDAR-based single-modality model.
 
-In this paper, we present our iterative scan greedy model soup approach, which leverages the strengths of both 2DPASS and model soups. We demonstrate the effectiveness of our method by conducting extensive experiments on LiDAR semantic segmentation tasks. The results showcase the potential of our approach to achieve notable performance improvements without altering the original model architecture and without incurring additional prediction time.
+In this paper, we present our iterative scan greedy model soup approach, which leverages the strengths of both 2DPASS \cite{yan20222dpass} and model soups. We demonstrate the effectiveness of our method by conducting extensive experiments on LiDAR semantic segmentation tasks. The results showcase the potential of our approach to achieve notable performance improvements without altering the original model architecture and without incurring additional prediction time.
 
-The contributions of this work are twofold: firstly, the integration of model soups with 2DPASS, which presents a new perspective for enhancing single-modality LiDAR-based semantic segmentation models. Secondly, the validation of our iterative scan greedy model soup approach through empirical evaluations establishes its effectiveness and efficiency in improving semantic segmentation for self-driving cars' scene understanding.
+The contributions of this work are twofold: firstly, the integration of model soups with 2DPASS \cite{yan20222dpass}, which presents a new perspective for enhancing single-modality LiDAR-based semantic segmentation models. Secondly, the validation of our iterative scan greedy model soup approach through empirical evaluations establishes its effectiveness and efficiency in improving semantic segmentation for self-driving cars' scene understanding.
 
 
 
@@ -106,7 +99,7 @@ The contributions of this work are twofold: firstly, the integration of model so
 }
 
 \subsubsection{Camera-Based Methods:}
-Camera-based semantic segmentation aims to predict pixel-wise labels for 2D images, with FCN being a pioneering architecture in this field. Recent advancements have explored multi-scale feature learning, dilated convolution, and attention mechanisms to achieve significant improvements. However, camera-only methods suffer from limitations \cite{yan20222dpass}  in depth sensing and low-light conditions.
+Camera-based semantic segmentation aims to predict pixel-wise labels for 2D images, with FCN being a pioneering architecture in this field. Recent advancements have explored multi-scale feature learning, dilated convolution, and attention mechanisms to achieve significant improvements. However, camera-only methods suffer from limitations   in depth sensing and low-light conditions.
 
 \subsubsection{LiDAR-Based Methods:}
 LiDAR data is typically represented as point clouds, and various approaches have been developed for processing them. Point-based methods, like PointNet, utilize per-point Multi-Layer Perceptron (MLP) to approximate a permutation-invariant set function. While these methods extract local features from point clouds, they can be inefficient due to time-consuming sampling and grouping algorithms.
@@ -148,16 +141,16 @@ In conclusion, model souping stands as a testament to the evolving landscape of 
 \centering\
 	
 \small
-\begin{tabular}{p{3.5cm} p{8cm}}
+\begin{tabular}{p{3.5cm} p{4cm}}
 		\toprule
 		\textbf{Method} & \textbf{Description} \\
 		\midrule
 		Best ValAcc Model & Choose model with highest validation accuracy ValAcc($\theta_i$) \\
 		Ensemble & Combine predictions of models parameterized by $\theta_i$ \\
-		Uniform Soup & Average parameter values $\theta_i$ \\
-		Greedy Soup Alg. 1 & Greedy approach for model ensemble \\
-		Learned Soup Alg. & Learn optimized ensemble of models \\
-		Pruned Soups Alg. & Select subset of models for ensemble \\
+		Uniform Soup & Average parameter values $\theta_i$ \ \cite{wortsman2022model} \\
+		Greedy Soup  & Greedy approach for model ensemble  \cite{wortsman2022model}\\
+		Learned Soup & Learn optimized ensemble of models \cite{wortsman2022model} \\
+		Pruned Soups & Select subset of models for ensemble \cite{dansereau2023model} \\
 		Iterative Uniform Greedy Soup Alg. 1 & Iterative Greedy Soup with uniform weights \\
 		Iterative Non-uniform Greedy Soup Alg. 2 & Iterative Greedy Soup with non-uniform weights \\
 		\bottomrule
@@ -165,42 +158,84 @@ In conclusion, model souping stands as a testament to the evolving landscape of 
 	\caption{Summary of Methods}
 \end{table}
 
-	
-
-\begin{algorithm}[htbp]
-\caption{Pruned soups}
+\begin{algorithm}[H]
+\caption{Iterative Uniform Greedy Soup}
 \label{alg:algorithm}
 \textbf{Input}: weights of Potential soup ingredients ${\theta_1, ..., \theta_k}$ (optionally sorted in decreasing order of \textbf{ValAcc}($\theta_i$))\\
-\textbf{Parameter}: numbers of passes (N)\\
+\textbf{Parameter}:epochs\\
 \begin{algorithmic}[1] %[1] enables line numbers
-\STATE soup = $\frac{1}{k} \sum_{i=1}^k \theta_i$
-\STATE baseline = \textbf{ValAcc}(averaged weights).
-\FOR{pass=1 to N}
+\STATE soupList = emptyList
+\STATE bestValAcc = 0
+\FOR{epoch=1 to epochs}
 \FOR{i=1 to k}
-\STATE new soup $\leftarrow$ Remove a model $\theta_i$ from the soup.
-\IF {\textbf{ValAcc}(new soup) $>=$ baseline}
-\STATE baseline = \textbf{ValAcc}(new soup)
-\STATE soup $\leftarrow$ new soup
+\STATE potentialSoupList $\leftarrow$ AddToSoupList($\theta_i$)
+\IF {\textbf{ValAcc}(potentialSoupList) $>=$ bestValAcc}
+\STATE bestValAcc = \textbf{ValAcc}(potentialSoupList)
+\STATE soupList $\leftarrow$ potentialSoupList
 \ENDIF
 \ENDFOR
 \ENDFOR
-\STATE \textbf{return} weights of the final soup $\theta_{soup}$
+\STATE \textbf{return} weights of the final soup $\theta_{soupList}$
 \end{algorithmic}
 \end{algorithm}
 
 
+
+\begin{algorithm}[H]
+\caption{Iterative Non Uniform Greedy Soup}
+\label{alg:algorithm}
+\textbf{Input}: weights of Potential soup ingredients ${\theta_1, ..., \theta_k}$ (optionally sorted in decreasing order of \textbf{ValAcc}($\theta_i$))\\
+\textbf{Parameter}:epochs,weightSearchCount,countUniqueCheckpointsEnable,
+cummulativeWeightEnable
+\begin{algorithmic}[1] %[1] enables line numbers
+\STATE soupList = emptyList
+\STATE bestValAcc = 0
+\FOR{pass=1 to N}
+\FOR{i=1 to k}
+\STATE potentialSoupList $\leftarrow$ AddToSoupList($\theta_i$,
+weightSearchCount,countUniqueCheckpointsEnable,
+cummulativeWeightEnable)
+\IF {\textbf{ValAcc}(potentialSoupList) $>=$ bestValAcc}
+\STATE bestValAcc = \textbf{ValAcc}(potentialSoupList)
+\STATE soupList $\leftarrow$ potentialSoupList
+\ENDIF
+\ENDFOR
+\ENDFOR
+\STATE \textbf{return} weights of the final soup $\theta_{soupList}$
+\end{algorithmic}
+\end{algorithm}
+
+The modified Greedy Soup algorithm introduces two key parameters to enhance its performance. The first parameter, \texttt{weightSearchCount}, controls the number of weighted averages calculated between the parameters of the \texttt{greedySoup} model and each new checkpoint. This parameter influences the algorithm's behavior by determining the weights for averaging, computed using a linearly spaced range of values between \texttt{numIngredients} and 1.
+
+The second parameter, \texttt{countUniqueCheckpoints}, offers control over whether unique checkpoints are included in the \texttt{greedySoup} model. When set to \texttt{true}, the algorithm checks if a new checkpoint has been added based on its index (\texttt{ingredientIndexList}). If not yet included, the checkpoint is added as an ingredient. This ensures that the \texttt{greedySoup} model comprises only unique checkpoints, enhancing its diversity.
+
+Furthermore, the option of \texttt{cumulativeWeightEnable} is introduced. When enabled, this parameter influences the calculation of weights for parameter averaging by incorporating cumulative weight based on the epoch number. The \texttt{cumulativeWeightOfEpoch} variable facilitates this calculation, resulting in a cumulative weight formula of \texttt{cumulativeWeightOfEpoch = (epoch + 1) * (epoch + 2) / 2}.
+
+The modified Greedy Soup algorithm proceeds in the following steps: First, the \texttt{greedySoup} model is initialized with parameters from the best checkpoint. Next, a specified number of epochs are iterated over. Within each epoch, a list of checkpoints (up to \texttt{checkpointsUsed}) is traversed. For each checkpoint, a weighted average of parameters from the \texttt{greedySoup} model and the current checkpoint is calculated, with the number of weighted averages determined by \texttt{weightSearchCount}.
+
+The potential \texttt{greedySoup} parameters, denoted as \texttt{potentialGreedySoupParamsJ}, are computed using the formula:
+\[ \texttt{potentialGreedySoupParamsJ} = \texttt{greedySoupParams[K]} \cdot J + \frac{\texttt{newIngredientParams[K]}}{J + \texttt{cumulativeWeightOfEpoch}} \]
+where $J$ iterates over the list $\texttt{np.linspace(numIngredients, 1, weightSearchCount, endpoint=false, dtype=int)}$.
+
+Subsequently, the potential \texttt{greedySoup} model is tested on the validation dataset to calculate the mIoU metric. If the mIoU of the potential model surpasses the current best mIoU (\texttt{bestMIOUSoFar}), the \texttt{greedySoup} model is updated with the new parameters, and \texttt{bestMIOUSoFar} is updated accordingly. Additionally, if \texttt{countUniqueCheckpoints} is active, the new checkpoint is appended to the \texttt{greedySoup} model only if it is unique based on the \texttt{ingredientIndexList}.
+
+Throughout this process, the algorithm maintains tracking of added models (\texttt{addedModels}), ingredient count (\texttt{numIngredients}), and indices of used checkpoints (\texttt{ingredientIndexList}). These steps are reiterated for the specified number of epochs, offering an iterative approach to enhancing the \texttt{greedySoup} model's performance.
+
+The modified Greedy Soup algorithm introduces the concept of cumulative epoch weights, contributing to varying levels of checkpoint importance across different epochs.
+
+
 \section{Experiments}
 \subsection{Experiment setup}
-we have collected 100 checkpoints of while training 2DPASS on both  Semantickitti and Nuscenes datasets.
+we have collected 100 checkpoints of while training 2DPASS \cite{yan20222dpass} on both  Semantickitti \cite{behley2019semantickitti}. and Nuscenes \cite{caesar2020nuscenes}  datasets.
 we have applied our modified greedy soup techniques 
 
 \subsection{Results}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
 	\caption{Semantic Kittti Performance Metrics for Different Objects/Models}
-	\begin{tabular}{lccccccc}
+	\begin{tabular}{{p{3cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm}}}
 		\toprule
 		Objects/Models & Best & Best TTA & Paper Best & Paper Best TTA & 13 Ingredients & 24 Ingredients TTA & 24 Ingredients \\
 		& Indiv. & Indiv. & & & & TTA & \\
@@ -235,11 +270,11 @@ we have applied our modified greedy soup techniques
 \end{table}
 
 
-\begin{table}[htbp]
+\begin{table}[H]
 	\centering
 	\small
 	\caption{Nuscenes Performance Metrics for Different Objects/Models}
-	\begin{tabular}{lcccc}
+	\begin{tabular}{{p{3cm} p{1cm} p{1cm} p{1cm} p{1cm}}}
 		\toprule
 		Objects/Models & Best Individual & Best Paper & Best Paper TTA & 16 Ingredients \\
 		& Model & Model & & \\
@@ -268,224 +303,74 @@ we have applied our modified greedy soup techniques
 		\bottomrule
 	\end{tabular}
 \end{table}
+\subsection{Ablation study}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Ingredients} & \textbf{Count} & \textbf{MIoU (\%)} \\
+\hline
+$[0]$ & 1 & 65.2798 \\
+$[0,3]$ & 2 & 65.3449 \\
+$[0,3,7]$ & 3 & 65.5071 \\
+$[0,3,7,12]$ & 4 & 65.6145 \\
+$[0,3,7,12,18]$ & 5 & 65.6381 \\
+$[0,3,7,12,18,19]$ & 6 & 65.9205 \\
+$[0,3,7,12,18,19,20]$ & 7 & 66.0292 \\
+$[0,3,7,12,18,19,20,22]$ & 8 & 66.0755 \\
+$[0,3,7,12,18,19,20,22,23]$ & 9 & 66.1055 \\
+$[0,3,7,12(2),18,19,20,22,23]$ & 10 & 66.1087 \\
+$[0,3,7,12(2),18(2),19,20,22,23]$ & 11 & 66.1551 \\
+$[0,3,7,12(2),18(2),19,20,22,23(2)]$ & 12 & 66.1691 \\
+$[0,3,7,12(2),18(3),19,20,22,23(2)]$ & 13 & 66.1711 \\
+$[0,3,7,12(2),18(3),19,20,22(2),23(2)]$ & 14 & 66.2202 \\
+\hline
+\end{tabular}
+\caption{semanticKitti MIoU values for different ingredient combinations}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\small
+
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Ingredients} & \textbf{Count} & \textbf{MIoU (\%)} \\
+\hline
+$[0]$ & 1 & 75.7099\\
+$[0,1]$ & 2 & 75.8291\\
+$[0,1,2]$ & 3 & 75.8732 \\
+$[0,1,2,3]$ & 4 & 75.9178 \\
+$[0,1,2,3,4]$ & 5 & 76.0154 \\
+$[0,1,2,3,4,15]$ & 6 & 76.0245 \\
+$[0,1,2,3,4,15,21]$ & 7 & 76.0398 \\
+$[0,1,2,3,4,15,21,29]$ & 8 & 76.0656 \\
+$[0,1,2,3,4,15,21,29,66]$ & 9 & 76.0809 \\
+$[0,1,2,3,4,15,21,29,66,73]$ & 10 & 76.0812 \\
+$[0(2),1,2,3,4,15,21,29,66,73]$ & 11 & 76.0912 \\
+$[0(2),1(2),2,3,4,15,21,29,66,73]$ & 12 & 76.1110 \\
+$[0(2),1(2),2,3,4(2),15,21,29,66,73]$ & 13 & 76.1297 \\
+$[0(2),1(2),2,3,4(2),15,21(2),29,66,73]$ & 14 & 76.1323 \\
+$[0(2),1(2),2,3,4(2),15,21(2),29(2),66,73]$ & 15 & 76.1368 \\
+\hline
+\end{tabular}
+\caption{Nuscenes MIoU values for different ingredient combinations}
+\end{table}
 
 \section{Conclusion}
+
+We introduce a groundbreaking methodology named "Iterative Scan Greedy Model Soup" that we have applied to the realm of LiDAR semantic segmentation. By harnessing this innovative approach, we enhance an advanced open-source 2DPASS \cite{yan20222dpass} semantic segmentation code and showcase its effectiveness on the semanticKitti and nuscenes datasets. Significantly, our technique achieves remarkable enhancements in Mean Intersection Over Union (MIoU) metrics, all while maintaining the prediction time unchanged.
 
 
 \section{References}
 
-\begin{algorithm}[tb]
-\caption{Pruned soups}
-\label{alg:algorithm}
-\textbf{Input}: weights of Potential soup ingredients ${\theta_1, ..., \theta_k}$ (optionally sorted in decreasing order of \textbf{ValAcc}($\theta_i$))\\
-\textbf{Parameter}: numbers of passes (N)\\
-\begin{algorithmic}[1] %[1] enables line numbers
-\STATE soup = $\frac{1}{k} \sum_{i=1}^k \theta_i$
-\STATE baseline = \textbf{ValAcc}(averaged weights).
-\FOR{pass=1 to N}
-\FOR{i=1 to k}
-\STATE new soup $\leftarrow$ Remove a model $\theta_i$ from the soup.
-\IF {\textbf{ValAcc}(new soup) $>=$ baseline}
-\STATE baseline = \textbf{ValAcc}(new soup)
-\STATE soup $\leftarrow$ new soup
-\ENDIF
-\ENDFOR
-\ENDFOR
-\STATE \textbf{return} weights of the final soup $\theta_{soup}$
-\end{algorithmic}
-\end{algorithm}
-
 
 %%%%%%%%% REFERENCES
-\bibliography{egbib}  % Specify your .bib file without the extension
-
-
-\end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\bibliographystyle{plain} % Choose a bibliography style
+\bibliography{egbib} % Specify the .bib file name without the extension
 
 
 \end{document}
