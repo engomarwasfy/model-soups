@@ -1,17 +1,12 @@
 % CVPR 2022 Paper Template
 % based on the CVPR template provided by Ming-Ming Cheng (https://github.com/MCG-NKU/CVPR_Template)
 % modified and extended by Stefan Roth (stefan.roth@NOSPAMtu-darmstadt.de)
-
 \documentclass[10pt,twocolumn,letterpaper]{article}
-
 %%%%%%%%% PAPER TYPE  - PLEASE UPDATE FOR FINAL VERSION
 %\usepackage[review]{cvpr}      % To produce the REVIEW version
-\usepackage{cvpr}              % To produce the CAMERA-READY version
-%$\usepackage[pagenumbers]{cvpr} % To force page numbers, e.g. for an arXiv version
-
+%\usepackage{cvpr}              % To produce the CAMERA-READY version
+\usepackage[pagenumbers]{cvpr} % To force page numbers, e.g. for an arXiv version
 % Include other packages here, before hyperref.
-
-
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
@@ -19,8 +14,6 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{adjustbox}
-
-
 % It is strongly recommended to use hyperref, especially for the review version.
 % hyperref with option pagebackref eases the reviewers' job.
 % Please disable hyperref *only* if you encounter grave issues, e.g. with the
@@ -31,7 +24,7 @@
 % (Or just hit 'q' on the first LaTeX run, let it finish, and you
 %  should be clear).
 \usepackage[pagebackref,breaklinks,colorlinks]{hyperref}
-
+\usepackage{hyperref} % Import the hyperref package
 
 % Support for easy cross-referencing
 \usepackage[capitalize]{cleveref}
@@ -39,8 +32,6 @@
 \Crefname{section}{Section}{Sections}
 \Crefname{table}{Table}{Tables}
 \crefname{table}{Tab.}{Tabs.}
-
-
 %%%%%%%%% PAPER ID  - PLEASE UPDATE
 \def\cvprPaperID{00000} % *** Enter the CVPR Paper ID here
 \def\confName{CVPR}
@@ -51,44 +42,46 @@
 	
 	%%%%%%%%% TITLE - PLEASE UPDATE
 	\title{Enhancing LiDaR semantic segmentation using model soups }
-	
 	\author{ Omar Wasfy\\
-		{\tt\small omar.wasfy@alexu.edu.eg}
-		% For a paper whose authors are all at the same institution,
-		% omit the following lines up until the closing ``}''.
-	% Additional authors and addresses can be added with ``\and'',
-	% just like the second author.
-	% To save space, use either the email address or home page, not both
-	\and
-	Marwan Torki\\
-	{\tt\small marwan.torki@alexu.edu.eg}
+	{\tt\small omar.wasfy@alexu.edu.eg}
+\and
+Marwan Torki\\
+{\tt\small mtorki@alexu.edu.eg}
+\and
+Sohier Basiony\\
+{\tt\small sohier.basiony@alexu.edu.eg}
 }
 \maketitle
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-	In this paper, we present a pioneering approach for model soups, termed "Iterative Scan Greedy Model Soup," and apply it to the domain of LiDAR semantic segmentation. Leveraging this innovative technique, we augment the state-of-the-art open source code for 2DPASS \cite{yan20222dpass} semantic segmentation and demonstrate its efficacy on both the semanticKitti dataset and the nuscenes dataset. Remarkably, our approach achieves substantial improvements in Mean Intersection Over Union (MIoU) without any increase in prediction time, all while retaining the original model structure.	Our contributions in this work are twofold: Firstly, we successfully extend the application of model soups to LiDAR semantic segmentation, showcasing their adaptability and potential impact on the domain. Secondly, we introduce an optimized and highly efficient version of the existing greedy soup technique, further enhancing the overall performance of the approach. Through comprehensive experiments and rigorous evaluations, our results highlight the significance of the iterative scan greedy model soup in advancing LiDAR semantic segmentation, opening up new possibilities for enhanced perception systems in autonomous driving and related fields.
+	In this paper, we present a pioneering approach for model soups \cite{wortsman2022model,dansereau2023model}, named "Iterative Scan Greedy Model Soup," and apply it to the domain of LiDAR semantic segmentation. using this technique, we augment the state-of-the-art open source code for 2DPASS \cite{yan20222dpass} semantic segmentation and demonstrate its efficacy on both the semanticKitti dataset and the nuscenes dataset. Remarkably, our approach achieves improvements in Mean Intersection Over Union (MIoU) without any increase in prediction time, all while retaining the original model structure.	Our contributions in this work are described in two points: Firstly, we successfully extend the application of model soups to LiDAR semantic segmentation, showcasing their adaptability and potential impact on the domain. Second, we introduce an optimized and efficient version of the existing greedy soup technique, further enhancing the overall performance of the approach. Through comprehensive experiments and rigorous evaluations, our results highlight the significance of the iterative scan greedy model soup in advancing LiDAR semantic segmentation, opening up new possibilities for enhanced perception systems in autonomous driving and related fields.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 \label{sec:intro}
 
-In recent years, semantic segmentation of LiDAR point clouds has emerged as a critical area of research, especially in advancing the scene-understanding capabilities of self-driving cars. The methods for semantic segmentation of LiDAR point clouds can be categorized based on their input modalities into two main groups:
+In recent years, semantic segmentation of LiDAR point clouds has emerged as a critical area of research, especially in advancing the scene-understanding capabilities of self-driving cars.\cite{hu2019randla,yan2021sparse,SparseConv} The methods for semantic segmentation of LiDAR point clouds can be categorized based on their input modalities into two main groups:
 
-Single Modality LiDAR-Based Input: These methods rely solely on LiDAR data as input. However, due to the sparse nature of LiDAR input, such single-modality-only approaches often face challenges in accurately segmenting complex scenes.
+Single Modality LiDAR-Based Input: These methods depend only on LiDAR data as input. However, due to the sparse nature of LiDAR input, such single-modality-only approaches often face challenges in accurately segmenting complex scenes.\cite{chen2017deeplab,chen2017rethinking,song2017semantic,huang2019ccnet,yan2021sparse,xu2020squeezesegv3,zhu2021cylindrical,tang2020searching,zheng2022beyond,zheng2021box}
 
-Multiple Modality LiDAR-Based and Camera-Based Input: On the contrary, multiple-modality methods leverage both LiDAR-based and camera-based inputs. By fusing information from both modalities, these techniques attempt to exploit the strengths of each sensor to achieve more robust semantic segmentation.
+Multiple-Modality LiDAR-Based and Camera-Based Input: These methods use both LiDAR-based and camera-based inputs. By fusing information from both modalities, these techniques attempt to exploit the strengths of each sensor to achieve more robust semantic segmentation.\cite{zhuang2021perception,el2019rgb,vora2020pointpainting}
 
 The open-source model "2D Priors Assisted Semantic Segmentation" (2DPASS)\cite{yan20222dpass} utilizes multiple modalities during the training process to enhance the prediction capabilities of a single-modality model. However, after training, only the single modality (LiDAR) is retained, making it a more practical solution in real-world deployment.
 
-On the other hand, model soups present an efficient approach to improving model performance without modifying the underlying model structure. This technique involves creating an ensemble of models with uniform structures and achieving performance gains akin to traditional ensembling methods without incurring additional prediction costs.
+In the context of model ensembling, Model soups present an efficient approach for improving model performance without modifying the underlying model structure. This technique involves creating an ensemble of models with uniform structures and achieving performance gains akin to traditional ensembling methods without incurring additional prediction costs.
 
-Building upon the foundation of 2DPASS \cite{yan20222dpass}, we propose a novel enhancement to the approach. We introduce a procedure where multiple checkpoints are saved during the training process, and subsequently, a new round of optimization is performed using model soups techniques. By iteratively applying model soups, we aim to further enhance the predictive capabilities of the LiDAR-based single-modality model.
+Building on the foundation of 2DPASS \cite{yan20222dpass}, we propose a novel enhancement to the approach. We introduce a procedure where multiple checkpoints are saved during the training process, and subsequently, a new round of optimization is performed using model soups techniques. By iteratively applying model soups, we aim to further enhance the predictive capabilities of the LiDAR-based single-modality model.
 
 In this paper, we present our iterative scan greedy model soup approach, which leverages the strengths of both 2DPASS \cite{yan20222dpass} and model soups. We demonstrate the effectiveness of our method by conducting extensive experiments on LiDAR semantic segmentation tasks. The results showcase the potential of our approach to achieve notable performance improvements without altering the original model architecture and without incurring additional prediction time.
 
-The contributions of this work are twofold: firstly, the integration of model soups with 2DPASS \cite{yan20222dpass}, which presents a new perspective for enhancing single-modality LiDAR-based semantic segmentation models. Secondly, the validation of our iterative scan greedy model soup approach through empirical evaluations establishes its effectiveness and efficiency in improving semantic segmentation for self-driving cars' scene understanding.
+The contributions of this work are: \\ 
+  \begin{enumerate}
+\item Our work involves the integration of model soups with 2DPASS \cite{yan20222dpass}, offering a fresh perspective for enhancing single-modality LiDAR-based semantic segmentation models. To the best of our knowledge, no previous research has explored the application of the model souping technique to the task of LiDAR modality segmentation.
+
+\item The validation of our iterative scan greedy model soup approach through various experiments demonstrates its substantial value in improving semantic segmentation, particularly for enhancing scene understanding in the context of self-driving cars.
+\end{enumerate}
 
 
 
@@ -99,47 +92,42 @@ The contributions of this work are twofold: firstly, the integration of model so
 }
 
 \subsubsection{Camera-Based Methods:}
-Camera-based semantic segmentation aims to predict pixel-wise labels for 2D images, with FCN being a pioneering architecture in this field. Recent advancements have explored multi-scale feature learning, dilated convolution, and attention mechanisms to achieve significant improvements. However, camera-only methods suffer from limitations   in depth sensing and low-light conditions.
+These methods aim to predict pixel-wise labels for 2D images, with FCN \cite{long2015fully} being a pioneering architecture in this field. Recent advancements have explored multi-scale feature learning, dilated convolution, and attention mechanisms to achieve significant improvements. However, camera-only methods suffer from limitations in depth sensing and low-light conditions.\cite{he2016deep,chen2017rethinking,chen2017deeplab,lin2016efficient,zhao2017pyramid,wang2018understanding,huang2019ccnet,yuan2018ocnet}
 
 \subsubsection{LiDAR-Based Methods:}
-LiDAR data is typically represented as point clouds, and various approaches have been developed for processing them. Point-based methods, like PointNet, utilize per-point Multi-Layer Perceptron (MLP) to approximate a permutation-invariant set function. While these methods extract local features from point clouds, they can be inefficient due to time-consuming sampling and grouping algorithms.
+These methods process LiDAR point clouds directly. Point-based methods, like PointNet \cite{qi2016pointnet}, utilize per-point Multi-Layer Perceptron (MLP)\cite{rosenblatt1958perceptron} While these methods extract local features from point clouds, they can be inefficient due to time-consuming sampling and grouping algorithms.\cite{thomas2019kpconv,qi2017pointnet++,wang2019dynamic,PointConv,liu2019relation,Thomas_2019_ICCV,hua2018pointwise,yan2020pointasnl,zhao2021point,engel2021point,yan2020pointasnl,zhao2021point,engel2021point}
+
 
 \subsubsection{Projection-based methods}
-project LiDAR point clouds onto 2D pixels, allowing the use of traditional CNNs. However, such methods suffer from information loss, leading to lower segmentation accuracy.
+These methods project LiDAR point clouds onto 2D pixels, allowing the use of traditional CNNs. However, such methods suffer from information loss, leading to lower segmentation accuracy \cite{lawin2017deep, boulch2017unstructured, tatarchenko2018tangent,wu2018squeezeseg,wu2019squeezesegv2,liong2020amvnet}.
 
 \subsubsection{Voxel-based frameworks}
-, particularly those using SparseConv, have become popular due to their efficiency and effectiveness. These methods store only non-empty voxels in a Hash table and perform convolution operations more efficiently. Recent studies have utilized SparseConv to design powerful network architectures, but they still face challenges in achieving higher segmentation accuracy.
+These methods using SparseConv \cite{SparseConv}, have become popular due to their efficiency. These methods store only nonempty voxels in a Hash table and perform convolution operations more efficiently. Recent studies have utilized SparseConv \cite{?} to design powerful network architectures, but they still face challenges in achieving higher segmentation accuracy \cite{zhou2020cylinder3d,cheng20212}.
 
 \subsection{Multi-Sensor Methods}
 
-Multi-sensor methods aim to combine information from both cameras and LiDAR, leveraging the strengths of both modalities. Approaches like RGBAL convert RGB images to polar-grid mapping representations and use early and mid-level fusion strategies. PointPainting improves LiDAR network performance by projecting segmentation logits from images into the LiDAR space. PMF explores the collaborative fusion of two modalities in camera coordinates. However, these methods require multi-sensor inputs during both training and inference, making them computationally intensive and less practical for real-world applications.
+These methods aim to combine information from both cameras and LiDAR, taking advantage of the strengths of both modalities. 
+Approaches like RGBAL \cite{el2019rgb} convert RGB images to polar-grid mapping representations and use early and mid-level fusion strategies. 
+PointPainting \cite{vora2020pointpainting}  improves LiDAR network performance by projecting segmentation logits from images into the LiDAR space. 
+PMF \cite{zhuang2021perception} explores the collaborative fusion of two modalities in camera coordinates. However, these methods require multi-sensor inputs during both training and inference, making them computationally intensive and less practical for real-world applications.\cite{krispel2020fuseseg,el2019rgb,meyer2019sensor,vora2020pointpainting}
 
 \subsection{Cross-modal Knowledge Transfer}
 
-Knowledge distillation, initially proposed for model compression, has been extended to transfer knowledge between different models through the alignment of feature representations. Recently, knowledge distillation has been applied to transfer priors across different modalities, using extra 2D images during training to improve inference performance. Various approaches have been explored, such as 2D-assisted pre-training, inflating 2D convolution kernels to 3D, and well-designed teacher-student frameworks.
+Knowledge distillation \cite{hinton2015distilling}, initially was for model compression, has been extended to transfer knowledge between different models through the alignment of feature representations.\cite{ba2013deep,chen2017learning,zagoruyko2016paying,srinivas2018knowledge,gupta2016cross,wang2019efficient,yuan2018rgb,liu20213d,zhao2020knowledge}
+Recently, knowledge distillation has been applied to transfer priors across different modalities, using extra 2D images during training to improve inference performance. 
+Various approaches have been explored, such as 2D-assisted pre-training  \cite{liu2021learning}, 
+inflating 2D convolution kernels to 3D \cite{xu2021image2point}, 
+and well-designed teacher-student frameworks \cite{yuan2022x}.
 
-In this work, we introduce a novel model soup technique applicable to all the above methods. This technique enhances the results without changing the model architecture or incurring extra processing time. By leveraging the complementary information from 2D images, our method improves the segmentation accuracy of LiDAR point clouds in a cross-modal setup. We believe this approach can be a valuable addition to the existing methods for multi-sensor semantic segmentation.
+In this work, we introduce a novel model soup \cite{wortsman2022model,dansereau2023model} technique applicable to all the above methods because of its inherent model-agnostic feature. 
+This technique improves the results without changing the model architecture or incurring extra processing time. By leveraging the complementary information from 2D images, our method improves the segmentation accuracy of LiDAR point clouds in a cross-modal setup. We believe this approach can be a valuable addition to the existing methods for multi-sensor semantic segmentation and also in other machine learning-based methods.
 %-------------------------------------------------------------------------
 
+
 \section{ Approach }
-
-
-Model souping, alternatively referred to as model averaging, presents an intriguing and innovative paradigm within the realm of ensemble learning strategies. It departs from the customary practice of pooling predictions from discrete models, opting instead for a tactful synthesis of the weights associated with a multitude of individual models. This departure from traditional prediction aggregation highlights model souping's distinctive character, aiming not merely for prediction fusion, but for a nuanced amalgamation of model strengths.
-
-The fundamental tenet of this approach centers around the pursuit of bolstering the overarching performance of the predictive model. By orchestrating a harmonious interplay of diverse model constituents, model souping strives to navigate the intricate balance between bias and variance. This strategic orchestration of model weights empowers the ensemble to harness the unique insights offered by each individual model, thus synergistically augmenting predictive accuracy and promoting robust generalization.
-
-One of the most notable benefits of model souping lies in its inherent ability to counteract the perils of overfitting. By judiciously spreading the influence of different models, the technique inherently introduces a regularization effect that helps mitigate the tendency of the ensemble to tailor itself excessively to the training data. Consequently, the resulting ensemble strikes an equilibrium that deftly sidesteps the pitfalls of overfitting, leading to a more resilient and reliable predictive framework.
-
-In conclusion, model souping stands as a testament to the evolving landscape of ensemble learning paradigms. Its fusion of model weights, carefully curated to accentuate diversity and mitigate overfitting, encapsulates a dynamic approach that aspires to elevate the predictive potential of the ensemble to new heights. This technique serves as a prime example of the ongoing quest within machine learning to push the boundaries of performance by ingeniously orchestrating the synergy between individual model components.
-
-
-
-
-
-
-\begin{table}[htbp]
+Model souping \cite{wortsman2022model,dansereau2023model} is an ensemble learning technique that averages the weights of multiple models to create a single, more accurate, and robust model. This approach can help mitigate overfitting and improve generalization performance. Model souping is different from traditional ensemble learning techniques in that it averages the weights of models, rather than their predictions. This can help to improve the diversity of the ensemble and reduce the risk of overfitting. Model souping can be computationally expensive and requires more training data than traditional ensemble learning techniques. However, it can offer significant performance improvements over traditional methods.
+\begin{table}[!h]
 \centering\
-	
 \small
 \begin{tabular}{p{3.5cm} p{4cm}}
 		\toprule
@@ -148,17 +136,15 @@ In conclusion, model souping stands as a testament to the evolving landscape of 
 		Best ValAcc Model & Choose model with highest validation accuracy ValAcc($\theta_i$) \\
 		Ensemble & Combine predictions of models parameterized by $\theta_i$ \\
 		Uniform Soup & Average parameter values $\theta_i$ \ \cite{wortsman2022model} \\
-		Greedy Soup  & Greedy approach for model ensemble  \cite{wortsman2022model}\\
+		Greedy Soup & Greedy approach for the model ensemble \cite{wortsman2022model}\\
 		Learned Soup & Learn optimized ensemble of models \cite{wortsman2022model} \\
 		Pruned Soups & Select subset of models for ensemble \cite{dansereau2023model} \\
-		Iterative Uniform Greedy Soup Alg. 1 & Iterative Greedy Soup with uniform weights \\
-		Iterative Non-uniform Greedy Soup Alg. 2 & Iterative Greedy Soup with non-uniform weights \\
+		Iterative Uniform Greedy Soup Alg. 1 & Iterative Greedy Soup with Uniform Weights \\
 		\bottomrule
 	\end{tabular}
 	\caption{Summary of Methods}
 \end{table}
-
-\begin{algorithm}[H]
+\begin{algorithm}[!h]
 \caption{Iterative Uniform Greedy Soup}
 \label{alg:algorithm}
 \textbf{Input}: weights of Potential soup ingredients ${\theta_1, ..., \theta_k}$ (optionally sorted in decreasing order of \textbf{ValAcc}($\theta_i$))\\
@@ -178,63 +164,16 @@ In conclusion, model souping stands as a testament to the evolving landscape of 
 \STATE \textbf{return} weights of the final soup $\theta_{soupList}$
 \end{algorithmic}
 \end{algorithm}
-
-
-
-\begin{algorithm}[H]
-\caption{Iterative Non Uniform Greedy Soup}
-\label{alg:algorithm}
-\textbf{Input}: weights of Potential soup ingredients ${\theta_1, ..., \theta_k}$ (optionally sorted in decreasing order of \textbf{ValAcc}($\theta_i$))\\
-\textbf{Parameter}:epochs,weightSearchCount,countUniqueCheckpointsEnable,
-cummulativeWeightEnable
-\begin{algorithmic}[1] %[1] enables line numbers
-\STATE soupList = emptyList
-\STATE bestValAcc = 0
-\FOR{pass=1 to N}
-\FOR{i=1 to k}
-\STATE potentialSoupList $\leftarrow$ AddToSoupList($\theta_i$,
-weightSearchCount,countUniqueCheckpointsEnable,
-cummulativeWeightEnable)
-\IF {\textbf{ValAcc}(potentialSoupList) $>=$ bestValAcc}
-\STATE bestValAcc = \textbf{ValAcc}(potentialSoupList)
-\STATE soupList $\leftarrow$ potentialSoupList
-\ENDIF
-\ENDFOR
-\ENDFOR
-\STATE \textbf{return} weights of the final soup $\theta_{soupList}$
-\end{algorithmic}
-\end{algorithm}
-
-The modified Greedy Soup algorithm introduces two key parameters to enhance its performance. The first parameter, \texttt{weightSearchCount}, controls the number of weighted averages calculated between the parameters of the \texttt{greedySoup} model and each new checkpoint. This parameter influences the algorithm's behavior by determining the weights for averaging, computed using a linearly spaced range of values between \texttt{numIngredients} and 1.
-
-The second parameter, \texttt{countUniqueCheckpoints}, offers control over whether unique checkpoints are included in the \texttt{greedySoup} model. When set to \texttt{true}, the algorithm checks if a new checkpoint has been added based on its index (\texttt{ingredientIndexList}). If not yet included, the checkpoint is added as an ingredient. This ensures that the \texttt{greedySoup} model comprises only unique checkpoints, enhancing its diversity.
-
-Furthermore, the option of \texttt{cumulativeWeightEnable} is introduced. When enabled, this parameter influences the calculation of weights for parameter averaging by incorporating cumulative weight based on the epoch number. The \texttt{cumulativeWeightOfEpoch} variable facilitates this calculation, resulting in a cumulative weight formula of \texttt{cumulativeWeightOfEpoch = (epoch + 1) * (epoch + 2) / 2}.
-
-The modified Greedy Soup algorithm proceeds in the following steps: First, the \texttt{greedySoup} model is initialized with parameters from the best checkpoint. Next, a specified number of epochs are iterated over. Within each epoch, a list of checkpoints (up to \texttt{checkpointsUsed}) is traversed. For each checkpoint, a weighted average of parameters from the \texttt{greedySoup} model and the current checkpoint is calculated, with the number of weighted averages determined by \texttt{weightSearchCount}.
-
-The potential \texttt{greedySoup} parameters, denoted as \texttt{potentialGreedySoupParamsJ}, are computed using the formula:
-\[ \texttt{potentialGreedySoupParamsJ} = \texttt{greedySoupParams[K]} \cdot J + \frac{\texttt{newIngredientParams[K]}}{J + \texttt{cumulativeWeightOfEpoch}} \]
-where $J$ iterates over the list $\texttt{np.linspace(numIngredients, 1, weightSearchCount, endpoint=false, dtype=int)}$.
-
-Subsequently, the potential \texttt{greedySoup} model is tested on the validation dataset to calculate the mIoU metric. If the mIoU of the potential model surpasses the current best mIoU (\texttt{bestMIOUSoFar}), the \texttt{greedySoup} model is updated with the new parameters, and \texttt{bestMIOUSoFar} is updated accordingly. Additionally, if \texttt{countUniqueCheckpoints} is active, the new checkpoint is appended to the \texttt{greedySoup} model only if it is unique based on the \texttt{ingredientIndexList}.
-
-Throughout this process, the algorithm maintains tracking of added models (\texttt{addedModels}), ingredient count (\texttt{numIngredients}), and indices of used checkpoints (\texttt{ingredientIndexList}). These steps are reiterated for the specified number of epochs, offering an iterative approach to enhancing the \texttt{greedySoup} model's performance.
-
-The modified Greedy Soup algorithm introduces the concept of cumulative epoch weights, contributing to varying levels of checkpoint importance across different epochs.
-
-
 \section{Experiments}
 \subsection{Experiment setup}
 we have collected 100 checkpoints of while training 2DPASS \cite{yan20222dpass} on both  Semantickitti \cite{behley2019semantickitti}. and Nuscenes \cite{caesar2020nuscenes}  datasets.
-we have applied our modified greedy soup techniques 
-
-\subsection{Results}
-
-\begin{table}[H]
+We have applied our modified greedy soup technique
+also we have conducted a comparison between collected checkpoints  class-wise and average miou performance using tta with number of votes = 12 and showed the improvement of using tta against non-tta in semantic Kitti validation set for collected checkpoints while training   
+\subsection{Results}.
+\begin{table}[!h]
 \centering
 \small
-	\caption{Semantic Kittti Performance Metrics for Different Objects/Models}
+	\caption{Semantic Kitti Performance Metrics for Different Objects/Models}
 	\begin{tabular}{{p{3cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm}}}
 		\toprule
 		Objects/Models & Best & Best TTA & Paper Best & Paper Best TTA & 13 Ingredients & 24 Ingredients TTA & 24 Ingredients \\
@@ -268,9 +207,7 @@ we have applied our modified greedy soup techniques
 		\bottomrule
 	\end{tabular}
 \end{table}
-
-
-\begin{table}[H]
+\begin{table}[!h]
 	\centering
 	\small
 	\caption{Nuscenes Performance Metrics for Different Objects/Models}
@@ -303,9 +240,230 @@ we have applied our modified greedy soup techniques
 		\bottomrule
 	\end{tabular}
 \end{table}
+
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l l}
+\hline
+\textbf{Checkpoint} & \textbf{MIoU} \\
+\hline
+Best individual checkpoint & 62.7293496631 \\
+Best individual checkpoint with TTA=12 & 65.7479476497 \\
+Enhanced Greedy Soup without early stopping & 62.9877710884 \\
+Enhanced Greedy Soup with early stopping & 63.1813711987 \\
+Enhanced Greedy Soup with early stopping with TTA=24 & 65.7048807097 \\
+Enhanced Greedy Soup with early stopping with TTA=12 & 65.6100402842 \\
+Normal greedy soup & 65.4171732912 \\
+Paper Github best provided checkpoint with TTA=1 & 65.2979295686 \\
+\hline
+\end{tabular}
+\caption{Testing Results on SemanticKitti MIoU for Different Checkpoints}
+\label{tab:miou_results}
+\end{table}
+
+
+
+\begin{enumerate}
+\item Using Test-Time Augmentation (TTA), Greedy Soup shows a slightly lower performance compared to the best individual checkpoint from training. Specifically, with Greedy Soup using TTA=24, the performance is 0.04% lower, and with TTA=12, it's 0.1% lower.
+
+\item We can observe that Greedy Soup performs better without Test-Time Augmentation, which is a form of ensembling. This result contrasts with the validation set, indicating a possible overfitting pattern. During the attempt to assemble the best combination of ingredients to enhance validation mIoU, there might have been a tendency to slightly overfit the validation dataset. Interestingly, Greedy Soup's model performs better than the best checkpoint in testing with TTA=1, suggesting an improvement in generalization capacity and indicating that Greedy Soup's model has enhanced without overfitting.
+\end{enumerate}
+
+\subsection{Analysis of collected Semantic Kitti checkpoints}
+
+
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l c}
+\hline
+Class & Avg mIoU \\
+\hline
+car & 0.9661 \\
+road & 0.9335 \\
+truck & 0.8381 \\
+building & 0.9130 \\
+bicyclist & 0.8977 \\
+vegetation & 0.8928 \\
+sidewalk & 0.8011 \\
+person & 0.7626 \\
+terrain & 0.7698 \\
+motorcycle & 0.7177 \\
+trunk & 0.7164 \\
+bus & 0.6517 \\
+fence & 0.6379 \\
+pole & 0.6256 \\
+traffic-sign & 0.5171 \\
+bicycle & 0.5050 \\
+parking & 0.4611 \\
+other-ground & 0.0483 \\
+motorcyclist & 0.0046 \\
+\hline
+\end{tabular}
+\caption{Average mIoU Scores for Different Classes for semanticKitti Checkpoints}
+\label{tab:miou_scores}
+\end{table}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{photos/class miou vs epoch ordered by average miou desc.png}
+    \caption{The subplots present the mIoU progression for each semantic class across checkpoints. The blue line plots the mIoU scores at each checkpoint, while the red dashed line indicates the class-specific average mIoU, and the green dashed line represents the overall average mIoU across all classes and checkpoints. This visualization aids in understanding both temporal and comparative performance metrics for each class.}
+    \label{fig:photo_example}
+\end{figure}
+
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{photos/class ordering accross semantickitti checkpoints.png}
+    \caption{Class ordering through collected semanticKitti ordered with respect to average miou of all classes training checkpoints , checkpoint 0 is the best performing average miou checkpoint  }
+    \label{fig:photo_example}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{photos/histogram of each class miou accross checkpoints.png}
+    \caption{Class histogram miou accross collected training checkpoints for semantic Kitti dataset  }
+    \label{fig:photo_example}
+\end{figure}
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l l}
+\hline
+\textbf{Class} & \textbf{Distribution} \\
+\hline
+Truck & Log-Normal \\
+Bicyclist & Log-Normal \\
+Person & Log-Normal \\
+Bus & Log-Normal \\
+Fence & Log-Normal \\
+Pole & Log-Normal \\
+Traffic-Sign & Log-Normal \\
+Bicycle & Log-Normal \\
+Motorcyclist & Log-Normal \\
+\hline
+\textbf{Remaining classes} & Normal distribution \\
+\hline
+\end{tabular}
+\caption{Distribution of Classes' Scores}
+\label{tab:scores_distribution}
+\end{table}
+
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{photos/histogram of average miou of collected semantic kitti checkpoints.png}
+    \caption{histogram of average histogram miou across collected training checkpoints for semantic Kitti dataset  }
+    \label{fig:photo_example}
+\end{figure}
+
+Normal distribution of average mu over collected checkpoints 
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{photos/miou improvement using tta num of votes =12.png}
+    \caption{Class-wise performance improvement when using tta (num of votes = 12 ) vs not using tta}
+    \label{fig:photo_example}
+\end{figure}
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{photos/miou improvment using tta num of votes = 12 classwise.png}
+    \caption{Class-wise performance improvement when using tta (num of votes = 12 ) vs not using tta}
+    \label{fig:photo_example}
+\end{figure}
+
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l c}
+\hline
+Class & Average mIoU Improvement (\%) \\
+\hline
+Car & 1.04 \\
+Road & 2.10 \\
+Truck & 12.62 \\
+Building & 1.72 \\
+Bicyclist & 4.48 \\
+Vegetation & 1.40 \\
+Sidewalk & 3.51 \\
+Person & 5.99 \\
+Terrain & 2.02 \\
+Motorcycle & 4.88 \\
+Trunk & 2.82 \\
+Bus & 7.78 \\
+Fence & 5.72 \\
+Pole & 5.66 \\
+Traffic-Sign & 3.56 \\
+Bicycle & 5.26 \\
+Parking & 5.35 \\
+Other-Ground & 1.30 \\
+Motorcyclist & 0.05 \\
+\hline
+\textbf{All classes average improvement} & \textbf{4.07} \\\hline
+\end{tabular}
+\caption{Class-wise Average mIoU Improvements with Test-Time Augmentation (TTA)}
+\label{tab:tta_miou_improvements}
+\end{table}
+
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l l}
+\hline
+\textbf{Class} & \textbf{Top 3 Checkpoints} \\
+\hline
+Car & [(39, 0.973), (11, 0.973), (21, 0.972)] \\
+Road & [(18, 0.941), (16, 0.941), (13, 0.941)] \\
+Truck & [(7, 0.953), (12, 0.950), (27, 0.947)] \\
+Building & [(34, 0.927), (15, 0.926), (27, 0.924)] \\
+Bicyclist & [(21, 0.934), (8, 0.929), (40, 0.927)] \\
+Vegetation & [(20, 0.902), (36, 0.901), (26, 0.901)] \\
+Sidewalk & [(18, 0.820), (16, 0.819), (8, 0.818)] \\
+Person & [(38, 0.796), (24, 0.791), (41, 0.791)] \\
+Terrain & [(20, 0.791), (34, 0.789), (24, 0.789)] \\
+Motorcycle & [(4, 0.780), (3, 0.778), (32, 0.777)] \\
+Trunk & [(7, 0.734), (8, 0.734), (23, 0.733)] \\
+Bus & [(21, 0.738), (11, 0.732), (9, 0.720)] \\
+Fence & [(37, 0.690), (27, 0.685), (9, 0.681)] \\
+Pole & [(36, 0.650), (24, 0.649), (53, 0.644)] \\
+Traffic-Sign & [(25, 0.535), (37, 0.535), (5, 0.534)] \\
+Bicycle & [(42, 0.551), (9, 0.540), (37, 0.540)] \\
+Parking & [(11, 0.525), (23, 0.519), (16, 0.519)] \\
+Other-Ground & [(14, 0.093), (17, 0.085), (22, 0.084)] \\
+Motorcyclist & [(31, 0.062), (30, 0.054), (55, 0.049)] \\
+\hline
+\end{tabular}
+\caption{Top 3 Checkpoints for Each Class}
+\label{tab:top_checkpoints}
+\end{table}
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l l}
+\hline
+\textbf{Checkpoint} & \textbf{Frequency} \\
+\hline
+11, 21, 16, 27, 8, 24, 9, 37 & 3 times each \\
+18, 7, 34, 20, 36, 23 & 2 times each \\
+\hline
+\end{tabular}
+\caption{Frequently Appearing Checkpoints in Top 3 for Each Class}
+\label{tab:frequent_checkpoints}
+\end{table}
+
+The checkpoints that appear most frequently in the top 3 for each class are:
+Checkpoints 11, 21, 16, 27, 8, 24, 9, and 37 each appear 3 times.
+Checkpoints 18, 7, 34, 20, 36, and 23 each appear 2 times.
+
 \subsection{Ablation study}
 
-\begin{table}[htbp]
+\begin{table}[!h]
 \centering
 \small
 \begin{tabular}{|l|l|l|}
@@ -328,20 +486,18 @@ $[0,3,7,12(2),18(3),19,20,22,23(2)]$ & 13 & 66.1711 \\
 $[0,3,7,12(2),18(3),19,20,22(2),23(2)]$ & 14 & 66.2202 \\
 \hline
 \end{tabular}
-\caption{semanticKitti MIoU values for different ingredient combinations}
+\caption{semantic Kitti MIoU values for different ingredient combinations}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[!h]
     \centering
-    \includegraphics[width=0.5\textwidth]{photos/semanticKitti.png}
+    \includegraphics[width=0.5\textwidth]{photos/semantickitti_soup.png}
     \caption{Enhaced Greedy Soup improves 1\% on best checkpoint }
     \label{fig:photo_example}
 \end{figure}
-
-\begin{table}[htbp]
+\begin{table}[!h]
 \centering
 \small
-
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Ingredients} & \textbf{Count} & \textbf{MIoU (\%)} \\
@@ -367,25 +523,21 @@ $[0(2),1(2),2,3,4(2),15,21(2),29(2),66,73]$ & 15 & 76.1368 \\
 \end{table}
 
 
-\begin{figure}[h]
+\begin{figure}[!h]
     \centering
-    \includegraphics[width=0.5\textwidth]{photos/nuscenes.png}
+    \includegraphics[width=0.5\textwidth]{photos/nuscenes_soup.png}
     \caption{Enhaced Greedy Soup improves 0.5\% on best checkpoint }
     \label{fig:photo_example}
 \end{figure}
 
 
+
+
 \section{Conclusion}
-
-We introduce a groundbreaking methodology named "Iterative Scan Greedy Model Soup" that we have applied to the realm of LiDAR semantic segmentation. By harnessing this innovative approach, we enhance an advanced open-source 2DPASS \cite{yan20222dpass} semantic segmentation code and showcase its effectiveness on the semanticKitti and nuscenes datasets. Significantly, our technique achieves remarkable enhancements in Mean Intersection Over Union (MIoU) metrics, all while maintaining the prediction time unchanged.
-
-
-\section{References}
+We introduce a new method named "Iterative Scan Greedy Model Soup" that we have applied to LiDAR semantic segmentation. By harnessing this innovative approach, we enhance an advanced open-source 2DPASS \cite{yan20222dpass} semantic segmentation code and showcase its effectiveness on the semantic Kitti and nuscenes datasets. Significantly, our technique achieves remarkable enhancements in Mean Intersection Over Union (MIoU) metrics, all while maintaining the prediction time unchanged.
 
 
-%%%%%%%%% REFERENCES
+
 \bibliographystyle{plain} % Choose a bibliography style
 \bibliography{egbib} % Specify the .bib file name without the extension
-
-
 \end{document}
